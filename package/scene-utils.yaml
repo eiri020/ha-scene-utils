@@ -1,0 +1,36 @@
+
+script:
+  autolight_reset:
+    alias: autolight_reset
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.kamer_autolight
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.keuken_autolight
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.tafel_autolight
+
+  scene_activate:
+    alias: scene_activate
+    fields:
+      scene_select:
+        description: entity_id of input_select containing the friendly scene names
+        example: input_select.tafel_scene
+      scene_option:
+        description: Option to set in input_select when setting entity on
+        example: Werken  
+      scene_updater:
+        description: Updater automation to force change
+        example: automation.kamer_scene_update  
+    sequence:
+      - service: input_select.select_option
+        data_template:
+          entity_id: "{{ scene_select }}"
+          option: "{{ scene_option }}"
+      - service: automation.trigger
+        target:
+          entity_id: "{{ scene_updater }}"                
+

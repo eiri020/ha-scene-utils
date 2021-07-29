@@ -1,0 +1,37 @@
+#################################################################
+# Scenario: Change scene when input changes 
+#
+# Given the light is on or off
+# When the selection of the input changes
+# Then the scene should change to that scene
+# 
+#################################################################
+blueprint:
+  name: scenes_change
+  description: Activate the scene when input_select is changed
+  domain: automation
+  input:
+    scene_selector:
+      name: Scene Selector
+      description: input_select with all scenes to toggle through
+      selector:
+        entity:
+          domain: input_select
+    scene_map:
+      name: Scene Map
+      description: Map with all names/scenes
+      selector:
+        entity:
+          domain: var
+variables:
+  map: !input scene_map
+  selector: !input scene_selector
+trigger:
+  - entity_id: !input scene_selector
+    platform: state
+action:
+  - service: scene.turn_on
+    data_template:
+      entity_id: >-
+        {% set scenes = states(map) | from_json %}
+        {{ scenes[states(selector)] }}

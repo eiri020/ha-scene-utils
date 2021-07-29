@@ -1,0 +1,82 @@
+input_text:
+  scene_snapshot_desc:
+    name: scene_snapshot_desc
+
+input_select:
+  scene_snapshot_group:
+    name: scene_snapshot_group
+    options:
+      - light.kamer
+      - light.keuken
+      - light.tafel
+      - light.bed
+      - light.toilet
+      - light.badkmaer
+      - light.balkon
+      - light.trap
+      - light.hoofd
+
+
+notify:
+  - platform: file
+    name: scene_notify_snapshot
+    filename: /config/runtime/scene_snapshot.yaml
+    timestamp: false
+
+shell_command:
+  # scena_snapshot_push_git: "git status"
+  ## hoi hoi hoi
+  scene_snapshot_push_git: "git add runtime/scene_snapshot.yaml && git commit -m saved_scenes && git push --force -o no-deploy"
+
+script:
+  scene_snapshot_group:
+    alias: light_save_select
+    sequence:
+      - service: script.scene_snapshot
+        data_template:
+          scene_group: "{{ states('input_select.scene_snapshot_group') }}"
+          scene_desc: "{{ states('input_text.scene_snapshot_desc') }}"
+
+  scene_snapshot:
+    alias: scene_snapshot
+    fields:
+      scene_group:
+        description: entity_id of group containing all lights and switches
+        example: group.kamer
+      scene_desc:
+        description: description to save with 
+        example: "'s avonds lampen aan"
+    sequence:
+      - service: notify.scene_notify_snapshot
+        data_template: 
+          message: |
+            - id: snap_{{ as_timestamp(now()) | int }}_{{ scene_group | replace( '.', '_') }}
+              name: "Snap {{ scene_group }}: '{{ scene_desc }}'"
+              # saved: {{ states('sensor.time_date') }} ({{ states('sensor.time_of_day') }})
+              # illuminance:
+              #   kamer: {{ states('sensor.kamer_sensor_illuminance') }}
+              #   keuken: {{ states('sensor.keuken_sensor_illuminance') }}
+              #   balkon: {{ states('sensor.balkon_sensor_illuminance') }}
+              # gordijnen:
+              #   kamer: {{ state_attr('cover.ikea_gordijn_kamer', 'current_position') }}
+              #   keuken: {{ state_attr('cover.ikea_gordijn_keuken', 'current_position') }}
+              # condition: 
+              #   sun: "{{ states('sun.sun') }}"
+              #   elevation: {{ state_attr('sun.sun', 'elevation') }} degrees
+              #   rain: {{ states('sensor.netatmo_javastraat_regenmeter_rain') }} mm
+              #   weather: "{{ states('sensor.weer_javastraat_condition') }}"
+              entities: 
+                {%- for l in state_attr(scene_group, 'entity_id') %}
+                {{ l }}:
+                  state: "{{ states(l) }}"
+                    {%- if not is_state(l,'off') -%}
+                      {% for attr in states[l].attributes %}
+                        {%- if not attr in ['friendly_name', 'effect_list', 'update', 'update_available', 'linkquality', 'supported_features', 'icon', 'min_mireds', 'max_mireds', 'supported_color_modes'] %}
+                  {{attr}}:  {{ states[l].attributes[attr] }}  
+                        {%- endif %}
+                      {%- endfor %}
+                    {%- endif %}
+                {%- endfor %}
+
+      - service: scene.reload
+      - service: shell_command.scene_snapshot_push_git
