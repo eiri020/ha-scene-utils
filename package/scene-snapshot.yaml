@@ -57,9 +57,9 @@ script:
               # saved: {{ states('sensor.time_date') }} ({{ states('sensor.time_of_day') }})
               # illuminance:
               {% for item in states.sensor -%}
-                {%- if item.attributes.device_class == "illuminance" -%}	
+              {%- if item.attributes.device_class == "illuminance" -%}	
               #   {{ item.entity_id }}: {{ states(item.entity_id) }}
-                {%- endif -%}
+              {% endif -%}
               {% endfor -%}
               #   kamer: {{ states('sensor.kamer_sensor_illuminance') }}
               #   keuken: {{ states('sensor.keuken_sensor_illuminance') }}
