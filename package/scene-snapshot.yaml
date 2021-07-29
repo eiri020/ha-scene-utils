@@ -2,6 +2,10 @@ input_text:
   scene_snapshot_desc:
     name: scene_snapshot_desc
 
+## TODO Config apart 
+## TODO Find light groups
+## TODO Find illuminance sensors
+## TODO empty proc
 input_select:
   scene_snapshot_group:
     name: scene_snapshot_group
@@ -24,8 +28,6 @@ notify:
     timestamp: false
 
 shell_command:
-  # scena_snapshot_push_git: "git status"
-  ## hoi hoi hoi
   scene_snapshot_push_git: "git add runtime/scene_snapshot.yaml && git commit -m saved_scenes && git push --force -o no-deploy"
 
 script:
@@ -54,6 +56,11 @@ script:
               name: "Snap {{ scene_group }}: '{{ scene_desc }}'"
               # saved: {{ states('sensor.time_date') }} ({{ states('sensor.time_of_day') }})
               # illuminance:
+              {%- for item in states.sensor -%}
+                {%- if item.attributes.device_class == "illuminance" -%}	
+              #   {{ item.entity_id }}: {{ states(item.entity_id) }}
+                {%- endif -%}
+              {%- endfor -%}
               #   kamer: {{ states('sensor.kamer_sensor_illuminance') }}
               #   keuken: {{ states('sensor.keuken_sensor_illuminance') }}
               #   balkon: {{ states('sensor.balkon_sensor_illuminance') }}

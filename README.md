@@ -1,5 +1,22 @@
 # ha-scene-utils
 Scripts and automations for Home Assistant scenes
-Testje
 
-Update local
+
+
+## Installation
+
+#### Dependencies
+
+## Scene selection
+
+#### Configuration
+
+#### Lovelace
+
+## Scene snapshot
+
+#### Configuration
+
+#### Lovelace
+
+
