@@ -61,10 +61,11 @@ script:
               #   {{ item.entity_id }}: {{ states(item.entity_id) }}
               {% endif -%}
               {% endfor -%}
-              #   kamer: {{ states('sensor.kamer_sensor_illuminance') }}
-              #   keuken: {{ states('sensor.keuken_sensor_illuminance') }}
-              #   balkon: {{ states('sensor.balkon_sensor_illuminance') }}
-              # gordijnen:
+              # covers:
+              {% for item in states.cover -%}
+              #   {{ item.entity_id }}: {{ state_attr(item.entity_id,'current_position') }}  # {{ states(item.entity_id) }} 
+              {% endfor -%}
+
               #   kamer: {{ state_attr('cover.ikea_gordijn_kamer', 'current_position') }}
               #   keuken: {{ state_attr('cover.ikea_gordijn_keuken', 'current_position') }}
               # condition: 
