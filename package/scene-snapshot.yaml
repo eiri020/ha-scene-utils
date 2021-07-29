@@ -56,11 +56,11 @@ script:
               name: "Snap {{ scene_group }}: '{{ scene_desc }}'"
               # saved: {{ states('sensor.time_date') }} ({{ states('sensor.time_of_day') }})
               # illuminance:
-              {%- for item in states.sensor -%}
-                {%- if item.attributes.device_class == "illuminance" -%}	
+              {% for item in states.sensor -%}
+                {% if item.attributes.device_class == "illuminance" -%}	
               #   {{ item.entity_id }}: {{ states(item.entity_id) }}
-                {%- endif -%}
-              {%- endfor -%}
+                {% endif -%}
+              {% endfor -%}
               #   kamer: {{ states('sensor.kamer_sensor_illuminance') }}
               #   keuken: {{ states('sensor.keuken_sensor_illuminance') }}
               #   balkon: {{ states('sensor.balkon_sensor_illuminance') }}
