@@ -1,0 +1,42 @@
+blueprint:
+  name: scenes_initialize2
+  description: Fills the scene input_select after home assistant is restarted
+  domain: automation
+  input:
+    scene_selector:
+      name: Scene Selector
+      description: input_select with all scenes to toggle through
+      selector:
+        entity:
+          domain: input_select
+    scene_map:
+      name: Scene Map
+      description: Map with all names/scenes
+      selector:
+        entity:
+          domain: var
+    scene_updater:
+      name: Scene Updater
+      description: Automation that is triggered when scene is changed
+      selector:
+        entity:
+          domain: automation
+variables:
+  map: !input scene_map
+trigger:
+  - platform: homeassistant
+    event: start
+action:
+  - service: automation.turn_off
+    entity_id: !input scene_updater
+
+  - service: input_select.set_options
+    data_template:
+      entity_id: !input scene_selector
+      options: |
+        {{ (states(map) | from_json).keys() | list }}
+
+# {{ (states(map).keys() }}
+
+  - service: automation.turn_on
+    entity_id: !input scene_updater

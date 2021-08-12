@@ -4,7 +4,6 @@ input_text:
 
 ## TODO Config apart 
 ## TODO Find light groups
-## TODO Find illuminance sensors
 ## TODO empty proc
 input_select:
   scene_snapshot_group:
@@ -29,6 +28,24 @@ notify:
 
 shell_command:
   scene_snapshot_push_git: "git add runtime/scene_snapshot.yaml && git commit -m saved_scenes && git push --force -o no-deploy"
+
+# automation:
+#   - id: scene_snapshot_initialize
+#     alias: scene_snapshot_initialize
+#     trigger:
+#       - platform: homeassistant
+#         event: start
+#     action:
+#       - service: input_select.scene_snapshot_group
+#         data_template:
+#           entity_id: scene_snapshot_group
+#           options:
+
+# {% for item in states.light -%}
+#   {%- if item.attributes.entity_id | count > 1 -%}
+#               #   {{ item.entity_id }}: {{ states(item.entity_id) }}
+#    {% endif -%}
+#               {% endfor -%}    
 
 script:
   scene_snapshot_group:
@@ -65,9 +82,6 @@ script:
               {% for item in states.cover -%}
               #   {{ item.entity_id }}: {{ state_attr(item.entity_id,'current_position') }}  # {{ states(item.entity_id) }} 
               {% endfor -%}
-
-              #   kamer: {{ state_attr('cover.ikea_gordijn_kamer', 'current_position') }}
-              #   keuken: {{ state_attr('cover.ikea_gordijn_keuken', 'current_position') }}
               # condition: 
               #   sun: "{{ states('sun.sun') }}"
               #   elevation: {{ state_attr('sun.sun', 'elevation') }} degrees
