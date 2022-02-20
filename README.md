@@ -1,7 +1,7 @@
 # ha-scene-utils
 Scripts and automations for Home Assistant scenes
 
-
+DISCONTINUED!
 
 ## Installation
 
